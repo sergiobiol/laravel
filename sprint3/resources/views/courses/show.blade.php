@@ -15,6 +15,20 @@
         <p class="card-text"><strong>Centre:</strong> {{ $course->centre }}</p>
         <p class="card-text"><strong>Creat:</strong> {{ $course->created_at->format('d/m/Y H:i') }}</p>
         <p class="card-text"><strong>Actualitzat:</strong> {{ $course->updated_at->format('d/m/Y H:i') }}</p>
+        
+        <hr>
+        <h6><strong>Estudiants matriculats ({{ $course->students->count() }}):</strong></h6>
+        @if($course->students->count() > 0)
+            <ul class="list-group mt-2">
+                @foreach($course->students as $student)
+                    <li class="list-group-item">
+                        <a href="{{ route('students.show', $student) }}">{{ $student->nom }} {{ $student->cognoms }}</a> - {{ $student->edat }} anys
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p class="text-muted">Encara no hi ha estudiants matriculats en aquest curs.</p>
+        @endif
     </div>
     <div class="card-footer">
         <a class="btn btn-warning" href="{{ route('courses.edit', $course) }}">Editar</a>

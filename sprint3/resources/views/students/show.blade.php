@@ -13,6 +13,13 @@
         <p class="card-text"><strong>Nom:</strong> {{ $student->nom }}</p>
         <p class="card-text"><strong>Cognoms:</strong> {{ $student->cognoms }}</p>
         <p class="card-text"><strong>Edat:</strong> {{ $student->edat }} anys</p>
+        <p class="card-text"><strong>Curs:</strong> 
+            @if($student->course)
+                <a href="{{ route('courses.show', $student->course) }}">{{ $student->course->nom }}</a>
+            @else
+                Sense curs assignat
+            @endif
+        </p>
         <p class="card-text"><strong>Creat:</strong> {{ $student->created_at->format('d/m/Y H:i') }}</p>
         <p class="card-text"><strong>Actualitzat:</strong> {{ $student->updated_at->format('d/m/Y H:i') }}</p>
     </div>

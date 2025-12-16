@@ -31,6 +31,17 @@
         <label>Edat</label>
         <input type="number" name="edat" value="{{ $student->edat }}" class="form-control" required>
     </div>
+    <div class="mb-3">
+        <label>Curs</label>
+        <select name="course_id" class="form-control">
+            <option value="">Sense curs</option>
+            @foreach($courses as $course)
+                <option value="{{ $course->id }}" {{ $student->course_id == $course->id ? 'selected' : '' }}>
+                    {{ $course->nom }}
+                </option>
+            @endforeach
+        </select>
+    </div>
     <button type="submit" class="btn btn-primary">Actualitzar</button>
 </form>
 @endsection

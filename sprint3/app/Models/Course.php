@@ -10,4 +10,9 @@ class Course extends Model
     use HasFactory;
     
     protected $fillable = ['nom', 'descripcio', 'centre'];
+    
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
 }

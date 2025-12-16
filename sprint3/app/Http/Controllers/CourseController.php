@@ -9,7 +9,7 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $courses = Course::latest()->paginate(5);
+        $courses = Course::withCount('students')->latest()->paginate(5);
         return view('courses.index', compact('courses'));
     }
 
@@ -33,6 +33,7 @@ class CourseController extends Controller
 
     public function show(Course $course)
     {
+        $course->load('students');
         return view('courses.show', compact('course'));
     }
 
@@ -59,5 +60,87 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Curs eliminat correctament.');
+    }
+    
+    public function exportCsv()
+    {
+        $courses = Course::all();
+        
+        $filename = 'courses_' . date('Y-m-d_H-i-s') . '.csv';
+        $handle = fopen('php://output', 'w');
+        
+        ob_start();
+        
+        // CSV headers
+        fputcsv($handle, ['ID', 'Nom', 'Descripció', 'Centre', 'Created At', 'Updated At']);
+        
+        // CSV data
+        foreach ($courses as $course) {
+            fputcsv($handle, [
+                $course->id,
+                $course->nom,
+                $course->descripcio,
+                $course->centre,
+                $course->created_at,
+                $course->updated_at,
+            ]);
+        }
+        
+        fclose($handle);
+        $csv = ob_get_clean();
+        
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+    
+    public function exportCoursesWithStudents()
+    {
+        $courses = Course::with('students')->get();
+        
+        $filename = 'courses_with_students_' . date('Y-m-d_H-i-s') . '.csv';
+        $handle = fopen('php://output', 'w');
+        
+        ob_start();
+        
+        // CSV headers
+        fputcsv($handle, ['Course ID', 'Course Name', 'Descripció', 'Centre', 'Student ID', 'Student Name', 'Student Cognoms', 'Student Edat']);
+        
+        // CSV data
+        foreach ($courses as $course) {
+            if ($course->students->count() > 0) {
+                foreach ($course->students as $student) {
+                    fputcsv($handle, [
+                        $course->id,
+                        $course->nom,
+                        $course->descripcio,
+                        $course->centre,
+                        $student->id,
+                        $student->nom,
+                        $student->cognoms,
+                        $student->edat,
+                    ]);
+                }
+            } else {
+                // Course without students
+                fputcsv($handle, [
+                    $course->id,
+                    $course->nom,
+                    $course->descripcio,
+                    $course->centre,
+                    '',
+                    'Sense estudiants',
+                    '',
+                    '',
+                ]);
+            }
+        }
+        
+        fclose($handle);
+        $csv = ob_get_clean();
+        
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 }
