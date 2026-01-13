@@ -75,10 +75,8 @@ class StudentController extends Controller
         
         ob_start();
         
-        // CSV headers
         fputcsv($handle, ['ID', 'Nom', 'Cognoms', 'Edat', 'Curs', 'Created At', 'Updated At']);
         
-        // CSV data
         foreach ($students as $student) {
             fputcsv($handle, [
                 $student->id,

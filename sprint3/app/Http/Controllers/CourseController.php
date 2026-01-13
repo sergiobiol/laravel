@@ -71,10 +71,8 @@ class CourseController extends Controller
         
         ob_start();
         
-        // CSV headers
         fputcsv($handle, ['ID', 'Nom', 'Descripció', 'Centre', 'Created At', 'Updated At']);
         
-        // CSV data
         foreach ($courses as $course) {
             fputcsv($handle, [
                 $course->id,
